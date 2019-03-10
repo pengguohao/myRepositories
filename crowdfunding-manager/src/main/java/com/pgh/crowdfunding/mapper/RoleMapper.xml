@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pgh.crowdfunding.mapper.RoleMapper">
+	<insert id="insAssignRoles">
+	insert into user_role values
+	<foreach collection="roleIds" separator="," item="rid">
+	(default,#{uid},#{rid})
+	</foreach>
+	</insert>
+	
+	<delete id="delAssignRoles">
+	delete from user_role 
+	where uid=#{uid} 
+	and rid in
+	<foreach collection="roleIds" open="(" close=")" separator="," item="rid">
+	#{rid}
+	</foreach>
+	</delete>
+	
+	<select id="selAllForPage" parameterType="pageInfo" resultType="role">
+		select * 
+		from role 
+		<where>
+		<if test="selAsked!=''">
+			name like concat('%',#{selAsked},'%')
+		</if>
+		</where>
+		order by rid
+		limit #{pageStart},#{pageSize}
+	</select>
+	
+	<select id="selTotal" resultType="long">
+		select count(*) 
+		from role
+		<where>
+			<if test="selAsked!=''">
+				name like concat('%',#{selAsked},'%')
+			</if>
+		</where>
+	</select>
+	
+	<delete id="delRoles">
+		delete from role where rid in
+		<foreach collection="array" open="(" close=")" separator="," item="rid">
+		#{rid}
+		</foreach>
+	</delete>
+	
+	<delete id="delUserRolesByUids">
+		delete from user_role where uid in
+		<foreach collection="array" open="(" close=")" separator="," item="uid">
+		#{uid}
+		</foreach>
+	</delete>
+	
+	<delete id="delUsersRolesByRids">
+		delete from user_role where rid in
+		<foreach collection="array" open="(" close=")" separator="," item="rid">
+		#{rid}
+		</foreach>
+	</delete>
+	
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pgh.crowdfunding.mapper.UserMapper">
+
+	<select id="selAllForPage" parameterType="pageInfo" resultType="user">
+		select * 
+		from user 
+		<where>
+			lifestatus='1' 
+		<if test="selAsked!=''">
+			and username like concat('%',#{selAsked},'%')
+		</if>
+		</where>
+		order by birthday desc
+		limit #{pageStart},#{pageSize}
+	</select>
+	
+	<select id="selTotal" resultType="long">
+		select count(*) 
+		from user
+		<where>
+			lifestatus='1' 
+			<if test="selAsked!=''">
+				and username like concat('%',#{selAsked},'%')
+			</if>
+		</where>
+	</select>
+	
+	<update id="updLifeStatusByUids">
+		update user set lifestatus='0' where uid in
+		<foreach collection="array" open="(" close=")" separator="," item="uid">
+		#{uid}
+		</foreach>
+	</update>
+	
+	
+	<select id="selUsersByUids"  resultType="user">
+		select * from user where uid in
+		<foreach collection="array" open="(" close=")" separator="," item="uid">
+		#{uid}
+		</foreach>
+	</select>
+	
+</mapper>
